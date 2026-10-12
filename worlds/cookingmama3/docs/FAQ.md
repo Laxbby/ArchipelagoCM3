@@ -22,7 +22,7 @@ Cooking Mama 3 isn't a super linear game, so it doesn't really have an endgame, 
 ___
 ### Why is my game in italian? / Why are the recipe names scrambled?
 
-![Alt text](https://laxbby.space/mama-babel-trap.gif)
+![GET BABELED](https://laxbby.space/mama-babel-trap.gif)
 
 # GAME GUIDE:
  ***
@@ -63,4 +63,4 @@ When this option is selected in the randomizer, it will tell you your goal progr
 
  - **Medals**: In all 3 cooking modes, each step has its own score, which is tallied at the end to give a score of 0-100 for the whole dish. A perfectly cooked dish is a Gold Medal, a well-cooked dish is a Silver Medal, a poorly cooked dish is a Bronze Medal, and a failed dish is a Lead Medal. Unique to the "Let's Cook!" Platter mode is the Smiley Face, which acts as a gold medal, and the frowney face, which encompasses everything else.
  - **Bonus!**: Completing a recipe step especially well will award you with a "Bonus!". When the dish is completed, the Bonuses you earned will be tallied up: every 5 bonuses, you get a prize.
- - **Presents**: You earn Stickers for the Diary, Clothing items for Mama, and certain kitchen customizations as prizes. As mentioned above, these are obtained from getting enough bonuses, but can also be obtained when obtaining certain milestones in the cooking modes, shopping mode, or challenge mode. In the vanilla game, recipes and friends are also unlocked by way of these milestones, but these do not apply in the randomized game.
+ - **Presents**: As mentioned above, you get presents for getting enough bonuses to fill the bonus meter. They also appear when reaching certain milestones in the cooking modes, shopping modes, and challenges. In the vanilla game, this is how you unlock Recipes, Friends, and accessories. These popups still appear in the randomizer but are nonfunctional.
