@@ -21,7 +21,7 @@ Cooking Mama 3 isn't a super linear game, so it doesn't really have an endgame, 
 
 ___
 ### Why is my game in italian? / Why are the recipe names scrambled?
-:)
+<img src="https://tenor.com/c9eAkVSl54L.gif"/>
 
 # GAME GUIDE:
  ***
