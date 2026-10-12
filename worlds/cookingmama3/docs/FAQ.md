@@ -23,7 +23,8 @@ ___
 ### Why is my game in italian? / Why are the recipe names scrambled?
 :)
 
-### GAME GUIDE:
+# GAME GUIDE:
+ ***
 #### "Cook With Mama" Mode
 this is the top left option in the top menu. Essentially a freeplay mode, it allows you to select unlocked recipes and prepare them. In this mode, there is a screen between recipe steps with instructions. There's also a way to practice individual minigames.
 
