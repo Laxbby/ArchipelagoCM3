@@ -1,4 +1,4 @@
-# Pokémon Emerald Setup Guide
+# Cooking Mama 3 Setup Guide
 
 ## Required Software
 

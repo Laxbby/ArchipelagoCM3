@@ -52,11 +52,12 @@ the bottom left option in the top menu. Used to dress up Mama with the clothing 
 
 #### "Change Design" Mode
 the bottom center option in the top menu. Used to customize the kitchen appliances and top screen. Also purely visual.
+
 #### "Options"
 
 the bottom right option in the top menu. Allows the save file to be deleted, allows the player to view the Special Items which can be obtained via local communication with Gardening mama, allows sending a demo of the game over DS Download Play, and finally allows you to view the credits.
 
-When this option is selected in the randomizer, it will tell your your goal progress and a few relevant settings.
+When this option is selected in the randomizer, it will tell you your goal progress and a few relevant settings.
 
  #### Other Stuff
 

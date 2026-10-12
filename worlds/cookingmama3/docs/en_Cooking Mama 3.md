@@ -9,9 +9,9 @@ The minigame timer, bonus counter, and other minor gameplay elements can be temp
 - Special Items (normally obtained by communicating with a copy of Gardening Mama)
   - These unlock one Cooking Contest Challenge each and may be required for goal
 - Recipe Unlocks
- - for the 66 non-secret recipes in the game
+  - for the 66 non-secret recipes in the game
 - Friend Unlocks
- - for the 8 friends in the game
+  - for the 8 friends in the game
 - Ingredients
   - for the 6 ingredients in Let's Match mode. combinations of 2 of them unlock secret recipes
 - Progressive Cooking Contest Challenge Page
