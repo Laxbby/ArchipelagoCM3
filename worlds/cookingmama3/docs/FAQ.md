@@ -20,6 +20,22 @@ Cooking Mama 3 isn't a super linear game, so it doesn't really have an endgame, 
 - Number of Special Items: The game has exclusive items that, in the normal game, are meant to be sent from a copy of Gardening Mama via local comms. They normally only unlock one contest each, so they can be configured to also act as goal mcguffins for this AP. There are 4 at max.
 
 ___
+### Where's the patch? How do I patch it?
+No patch! The current version of the apworld depends entirely on client memory editing. Please use a vanilla US ROM. If you usually just double-click the patch on other games to open them in AP, and aren't sure what to do here, consult the setup guide.
+
+There are some pretty notable implementation constraints with not using a patch, but for the most part, I was able to duct tape everything together with just the client. I know nothing about ASM hacking, but would LOVE to learn and hope to use this AP as an excuse to do so. Future versions may require a patch if this ever comes to pass. (If you're knowledgeable on this subject and want to help, please reach out!)
+
+___
+### How do I know what I have unlocked?
+Recipes, Friends, and shopping minigames will be inaccessible when locked, so those are pretty simple. For ingredients, the client will print out a list of what you have whenever you enter the Let's Match menu, and you'll be immediately kicked out if you try to do a recipe you can't do yet. For cooking contest challenges, look for a stamp on it that says "NEW". It'll look a little off, because it's only supposed to show up on the Special Items challenges, but the client will add this emblem to challenges that are allowed to be attempted. Like before, you'll be immediately kicked out of the minigame if you aren't allowed to do it yet.
+
+To view your special items, go to the Options page in the Top Menu and select "Gardening Mama". you'll be able to see what you have behind the buttons on the bottom screen. For anything else that you may want to check, type /received into the client or check the tracker on the website.
+
+___
+### "Complete Bonus" checks sometimes fail to send.
+Known issue, unfortunately it just happens sometimes and there's not much i can currently do about it. It seems to be related to lag, so therefore happens less on better hardware. My biggest recommendation is to try not to mash through the bonus sequence too quickly, and maybe restart the emulator/client/computer if it keeps happening, but otherwise, just keep trying. This is one of those things that ASM hacking would help with in the future.
+
+___
 ### Why is my game in italian? / Why are the recipe names scrambled?
 
 ![GET BABELED](https://laxbby.space/mama-babel-trap.gif)
