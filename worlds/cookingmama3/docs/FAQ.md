@@ -32,8 +32,8 @@ Recipes, Friends, and shopping minigames will be inaccessible when locked, so th
 To view your special items, go to the Options page in the Top Menu and select "Gardening Mama". you'll be able to see what you have behind the buttons on the bottom screen. For anything else that you may want to check, type /received into the client or check the tracker on the website.
 
 ___
-### "Complete Bonus" checks sometimes fail to send.
-Known issue, unfortunately it just happens sometimes and there's not much i can currently do about it. It seems to be related to lag, so therefore happens less on better hardware. My biggest recommendation is to try not to mash through the bonus sequence too quickly, and maybe restart the emulator/client/computer if it keeps happening, but otherwise, just keep trying. This is one of those things that ASM hacking would help with in the future.
+### I lost my save/am missing progress/am on a new PC/etc!
+Reset the game! Click "Emulation" > "Hard Reset". This will force the server to resync your progress.
 
 ___
 ### Why is my game in italian? / Why are the recipe names scrambled?
