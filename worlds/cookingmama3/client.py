@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 class CookingMama3Client(BizHawkClient):
     game = GAME_NAME
     system = "NDS"
-    patch_suffix = ""
+    patch_suffix = None
     logger = logging.getLogger("Client")
     #a copy of most of the important parts of the sava data is stored in the ap server
     #this accomplishes a few things: first, if the save file is somehow lost, it can be resynced with this
