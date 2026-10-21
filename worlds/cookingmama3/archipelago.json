@@ -1,7 +1,7 @@
 {
 	"game": "Cooking Mama 3",
 	"minimum_ap_version": "0.6.7",
-	"world_version": "1.0.0",
+	"world_version": "1.0.1",
 	"authors": ["laxbby"],
 	"version": 7,
 	"compatible_version": 7
