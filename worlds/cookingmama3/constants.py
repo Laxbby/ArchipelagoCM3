@@ -2,6 +2,8 @@ GAME_NAME = "Cooking Mama 3"
 
 US_HASH = "36406ED5497799060624E09622BC09D7"
 
+ROM_NAME_START = 0x0000000
+
 SAVED_BONUSES = 0x20B708C
 
 START_OF_TROPHIES= 0x20B708E
@@ -63,6 +65,7 @@ TARGET_TIMER = 0x20CAAEC
 CURRENT_TIMER = 0x20CAAEE
 #"current" counts up till it gets to "Target"
 
+SHOP_MODE_TIMER = 0x20E1A84 #target timer, specifically
 CHALLENGE_PAGE = 0x20E4AE4
 #determines what page youre on in the cooking contest
 

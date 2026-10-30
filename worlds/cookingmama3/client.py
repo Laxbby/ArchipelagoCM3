@@ -67,8 +67,15 @@ class CookingMama3Client(BizHawkClient):
     random: Random = Random()
 
     async def validate_rom(self, ctx: "BizHawkClientContext") -> bool:
+        
         try:
-            if ctx.rom_hash != US_HASH:
+            identifiers = await bizhawk.read(ctx.bizhawk_ctx, [
+                (ROM_NAME_START, 0xc, "ROM")
+            ])
+
+            if identifiers[0].decode("ascii") != "COOKINGMAMA3":
+                return False
+            elif ctx.rom_hash != US_HASH:
                 self.logger.warning(f"This is not the correct hash for this game! Make sure that you are using the US Version and that the ROM was dumped correctly.")
                 return False
         except bizhawk.RequestFailedError:
@@ -106,6 +113,8 @@ class CookingMama3Client(BizHawkClient):
         for i in self.special_items:
             special_bits |= SPECIAL_ITEMS_BYTE[i]
         writes.append((SPECIAL_ITEMS, special_bits.to_bytes(), "ARM9 System Bus"))
+
+        writes.append((SAVED_BONUSES, 0x0.to_bytes(1, "little"), "ARM9 System Bus"))
 
         #resets mama's accessories to default, so that you dont start with random accessories if using a new save
         ##note that if this is done during a reset, the game will overwrite mama's accessories just afterwards anyways, so this will have no effect. but assumedly, on first connect, the game will already be loaded, so the game will not do this and rather save the new clothes to the file! clever!
@@ -251,6 +260,7 @@ class CookingMama3Client(BizHawkClient):
                         "key": str(ctx.slot) + "Options",
                         "default": {
                                     "ExcludedMedalChecks": ctx.slot_data.get("excluded_medal_checks", frozenset({})),
+                                    "NumberBonusChecks": ctx.slot_data.get("number_bonus_checks", 1),
                                     "ProgressiveScore": int(ctx.slot_data.get("progressive_recipe_scores", 1)),
                                     "ChosenGoals": ctx.slot_data.get("goal_option", frozenset({"unlocked_recipes", "gold_medals", "cook_for_friend", "special_items"})),
                                     "TimerBuffs": int(ctx.slot_data.get("timer_buffs", 2)),
@@ -266,6 +276,8 @@ class CookingMama3Client(BizHawkClient):
                                     },
                         "want_reply": True,
                         "operations": [{"operation": "default", "value": {
+                                                                                "ExcludedMedalChecks": ctx.slot_data.get("excluded_medal_checks", frozenset({})),
+                                                                                "NumberBonusChecks": ctx.slot_data.get("number_bonus_checks", 1),
                                                                                 "ProgressiveScore": int(ctx.slot_data.get("progressive_recipe_scores", 1)),
                                                                                 "ChosenGoals": ctx.slot_data.get("goal_option", frozenset({"unlocked_recipes", "gold_medals", "cook_for_friend", "special_items"})),
                                                                                 "TimerBuffs": int(ctx.slot_data.get("timer_buffs", 2)),
@@ -337,6 +349,7 @@ class CookingMama3Client(BizHawkClient):
         ])
 
         waiting_bonus_filler = int.from_bytes(bytearray(game_data[20]), "little")
+        bonus_count = int.from_bytes(bytearray(game_data[28]), "little")
         waiting_time_trap = int.from_bytes(bytearray(game_data[29]), "little")
         waiting_babel_trap = int.from_bytes(bytearray(game_data[30]), "little")
         received_index = self.extra_data["ReceivedItems"]
@@ -500,6 +513,16 @@ class CookingMama3Client(BizHawkClient):
                     self.logger.warning(f"You don't have the necessary ingredients for this recipe!")
                     writes.append((TIMER_STATE, 0x2.to_bytes(1, "little"), "ARM9 System Bus"))
 
+        #block Let's Shop Mode checks
+        ##normally the game doesnt let you select locked ones, but the exception is the very first difficulty, which can still be selected even if its grayed out
+        ##this is something that ASM hacking would be great for, but for now, im gonna do it in a somewhat scuffed way
+        if current_mode == 0x07 and self.extra_data["NumOfShops"] == 0:
+            ##the game doesnt let you select locked shopping difficulties, so we don't actually *need to know* how many are specifically unlocked, or even whether the one we have selected is unlocked.
+            ##this is SPECIFICALLY to prevent level 1 from being accessed if no shops are unlocked. this is the only time that the game allows a level to be started. which makes sense, because in vanilla, you always have one unlocked
+            #so, if this is the case, we kiiiinda just, uh, force the game to end immediately
+            #the final score ends up being only dictated by the # of hearts, which is ALWAYS lower than even the easy threshold
+            writes.append((SHOP_MODE_TIMER, 0x0000.to_bytes(2, "little"), "ARM9 System Bus"))
+
         #block challenge mode checks
         challenge_page = int.from_bytes(bytearray(game_data[3]), "little")
         #if the game is in Challenge mode, and the current page of the challenge list is greater than or equal to (0-indexed!) the number of challenges, we must make sure the player does not try a locked challenge
@@ -533,24 +556,33 @@ class CookingMama3Client(BizHawkClient):
                     target_time = int(target_time + (target_time * (timer_buffs * .10) - (target_time * .10))) 
                     writes.append((TARGET_TIMER, target_time.to_bytes(2, "little"), "ARM9 System Bus"))
 
-        #apply random extra bonuses
+        #manage obtained bonuses
         current_step = int.from_bytes(bytearray(game_data[10]), "little")
         current_step_total = int.from_bytes(bytearray(game_data[11]), "little")
         current_bonus = int.from_bytes(bytearray(game_data[9]), "little")
-        #we wait until a dish is finished, and then just append the random extra bonuses to the "current recipe bonus" counter
         #somewhat scuffed way to check if a dish is done... see if the current step = number of total steps, which always happens on the results screen. but we make sure they arent both 0, which happens when the game is booted and such
-        if current_step == current_step_total and current_step_total > 0 and waiting_bonus_filler > 0:
-            #in the EXTREMELY RARE CASE where the player has more than 255 bonuses saved up, the bonuses gets clamped to 255. the bonus counter MIGHT be 2-byte but like, i already dont wanna have to wait through 255 bonuses so we'll just max it at that
-            if current_bonus + waiting_bonus_filler > 255:
-                waiting_bonus_filler = waiting_bonus_filler - (255 - current_bonus)
-                current_bonus = 255
-            else:
-                current_bonus += waiting_bonus_filler
+        if current_step == current_step_total and current_step_total > 0:
+            ##bonuses are entirely useless after the bonus checks have been obtained, so to avoid having to sit through the bonus screen, bonuses are completely cleared
+            if bonus_count >= self.config["NumberBonusChecks"]:
+                current_bonus = 0
                 waiting_bonus_filler = 0
-            ##the number of steps remains after returning to the menu, which means that bonuses obtained between completing one recipe and starting another may be lost. it doesnt seem to hurt anything at this point to just manually set it to 0 ourselves
-            writes.append((CURRENT_STEP, 0x0.to_bytes(1, "little"), "ARM9 System Bus"))
-            writes.append((CURRENT_BONUS, current_bonus.to_bytes(1, "little"), "ARM9 System Bus"))
-            writes.append((WAITING_BONUS_FILLER, waiting_bonus_filler.to_bytes(2, "little"), "ARM9 System Bus"))
+                writes.append((CURRENT_STEP, 0x0.to_bytes(1, "little"), "ARM9 System Bus"))
+                writes.append((CURRENT_BONUS, current_bonus.to_bytes(1, "little"), "ARM9 System Bus"))
+                writes.append((WAITING_BONUS_FILLER, waiting_bonus_filler.to_bytes(2, "little"), "ARM9 System Bus"))
+                pass
+            #we just append random extra bonuses to the "current recipe bonus" counter
+            elif waiting_bonus_filler > 0:
+                #in the EXTREMELY RARE CASE where the player has more than 255 bonuses saved up, the bonuses gets clamped to 255. the bonus counter MIGHT be 2-byte but like, i already dont wanna have to wait through 255 bonuses so we'll just max it at that
+                if current_bonus + waiting_bonus_filler > 255:
+                    waiting_bonus_filler = waiting_bonus_filler - (255 - current_bonus)
+                    current_bonus = 255
+                else:
+                    current_bonus += waiting_bonus_filler
+                    waiting_bonus_filler = 0
+                ##the number of steps remains after returning to the menu, which means that bonuses obtained between completing one recipe and starting another may be lost. it doesnt seem to hurt anything at this point to just manually set it to 0 ourselves
+                writes.append((CURRENT_STEP, 0x0.to_bytes(1, "little"), "ARM9 System Bus"))
+                writes.append((CURRENT_BONUS, current_bonus.to_bytes(1, "little"), "ARM9 System Bus"))
+                writes.append((WAITING_BONUS_FILLER, waiting_bonus_filler.to_bytes(2, "little"), "ARM9 System Bus"))
 
         #bad fashion trap
         if self.extra_data["NumOfFillerWaiting"][1] > 0:
@@ -651,7 +683,6 @@ class CookingMama3Client(BizHawkClient):
         ##send bonus checks
         prev_bonus = int.from_bytes(bytearray(game_data[12]), "little")
         bonus_watch = int.from_bytes(bytearray(game_data[13]), "little")
-        bonus_count = int.from_bytes(bytearray(game_data[28]), "little")
         print(f"{prev_bonus} and {bonus_watch}")
         #our lovely bonus watcher moves to 30 when a bonus is unlocked, and then to 31. we watch for that and send checks only when that happens
         if prev_bonus == 0x30 and bonus_watch == 0x31:

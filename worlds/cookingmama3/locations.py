@@ -152,7 +152,12 @@ def get_location_names_with_ids(location_names: list[str]) -> dict[str, int | No
     return {location_name: location_name_to_id[location_name] for location_name in location_names}
 
 def create_all_locations(world: CookingMama3World)-> None:
-    hub = world.get_region("Top Menu")
+    top_menu = world.get_region("Top Menu")
+    cook_with_mama = world.get_region("Cook With Mama Recipes")
+    lets_cook_friend = world.get_region("Let's Cook Friends List")
+    lets_cook_recipe = world.get_region("Let's Cook Recipes")
+    lets_match = world.get_region("Let's Match")
+    bonuses = world.get_region("Bonuses")
 
     excluded_medals = world.options.excluded_medal_checks
     chosen_medals = ALL_MEDAL_TYPES.difference(excluded_medals)
@@ -166,53 +171,68 @@ def create_all_locations(world: CookingMama3World)-> None:
     if "bronze_medal_cook_with_mama" in chosen_medals:
         bronze_medal_cook_with_mama_locs = [
         name for name in location_name_to_id
-        if  (name.startswith("Cook With Mama: ") or name.startswith("Let's Match: ")) and name.endswith("Bronze Medal")
+        if name.startswith("Cook With Mama: ") and name.endswith("Bronze Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(bronze_medal_cook_with_mama_locs), CookingMama3Location)
+        bronze_medal_lets_match_locs = [
+        name for name in location_name_to_id
+        if name.startswith("Let's Match: ") and name.endswith("Bronze Medal")
+        ]
+        cook_with_mama.add_locations(get_location_names_with_ids(bronze_medal_cook_with_mama_locs), CookingMama3Location)
+        lets_match.add_locations(get_location_names_with_ids(bronze_medal_lets_match_locs), CookingMama3Location)
     if "silver_medal_cook_with_mama" in chosen_medals:
         silver_medal_cook_with_mama_locs = [
         name for name in location_name_to_id
-        if  (name.startswith("Cook With Mama: ") or name.startswith("Let's Match: ")) and name.endswith("Silver Medal")
+        if name.startswith("Cook With Mama: ") and name.endswith("Silver Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(silver_medal_cook_with_mama_locs), CookingMama3Location)
+        silver_medal_lets_match_locs = [
+        name for name in location_name_to_id
+        if name.startswith("Let's Match: ") and name.endswith("Silver Medal")
+        ]
+        cook_with_mama.add_locations(get_location_names_with_ids(silver_medal_cook_with_mama_locs), CookingMama3Location)
+        lets_match.add_locations(get_location_names_with_ids(silver_medal_lets_match_locs), CookingMama3Location)
     if "gold_medal_cook_with_mama" in chosen_medals:
         gold_medal_cook_with_mama_locs = [
         name for name in location_name_to_id
-        if  (name.startswith("Cook With Mama: ") or name.startswith("Let's Match: ")) and name.endswith("Gold Medal")
+        if name.startswith("Cook With Mama: ") and name.endswith("Gold Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(gold_medal_cook_with_mama_locs), CookingMama3Location)
+        gold_medal_lets_match_locs = [
+        name for name in location_name_to_id
+        if name.startswith("Let's Match: ") and name.endswith("Gold Medal")
+        ]
+        cook_with_mama.add_locations(get_location_names_with_ids(gold_medal_cook_with_mama_locs), CookingMama3Location)
+        lets_match.add_locations(get_location_names_with_ids(gold_medal_lets_match_locs), CookingMama3Location)
 
     if "bronze_medal_lets_cook" in chosen_medals:
         bronze_medal_lets_cook_locs = [
         name for name in location_name_to_id
         if  name.startswith("Let's Cook: ") and name.endswith("Bronze Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(bronze_medal_lets_cook_locs), CookingMama3Location)
+        lets_cook_recipe.add_locations(get_location_names_with_ids(bronze_medal_lets_cook_locs), CookingMama3Location)
     if "silver_medal_lets_cook" in chosen_medals:
         silver_medal_lets_cook_locs = [
         name for name in location_name_to_id
         if  name.startswith("Let's Cook: ") and name.endswith("Silver Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(silver_medal_lets_cook_locs), CookingMama3Location)
+        lets_cook_recipe.add_locations(get_location_names_with_ids(silver_medal_lets_cook_locs), CookingMama3Location)
     if "gold_medal_lets_cook" in chosen_medals:
         gold_medal_lets_cook_locs = [
         name for name in location_name_to_id
         if  name.startswith("Let's Cook: ") and name.endswith("Gold Medal")
         ]
-        hub.add_locations(get_location_names_with_ids(gold_medal_lets_cook_locs), CookingMama3Location)
+        lets_cook_recipe.add_locations(get_location_names_with_ids(gold_medal_lets_cook_locs), CookingMama3Location)
     if "smiley_face" in chosen_medals:
         smiley_face_lets_cook_locs = [
         name for name in location_name_to_id
         if  name.startswith("Let's Cook: ") and name.endswith("Smiley Face")
         ]
-        hub.add_locations(get_location_names_with_ids(smiley_face_lets_cook_locs), CookingMama3Location)
+        lets_cook_recipe.add_locations(get_location_names_with_ids(smiley_face_lets_cook_locs), CookingMama3Location)
 
 
     cook_for_friends_locs = [
         name for name in location_name_to_id
         if  name.startswith("Cook for ")
         ]
-    hub.add_locations(get_location_names_with_ids(cook_for_friends_locs), CookingMama3Location)
+    lets_cook_friend.add_locations(get_location_names_with_ids(cook_for_friends_locs), CookingMama3Location)
 
 
     cooking_challenge_locs = []
@@ -222,7 +242,9 @@ def create_all_locations(world: CookingMama3World)-> None:
             name for name in location_name_to_id
             if  name.startswith("Cooking Contest: ") and name.endswith(threshold)
         ]
-    hub.add_locations(get_location_names_with_ids(cooking_challenge_locs), CookingMama3Location)
+    if world.options.enable_shop_mode_checks > 0:
+        cooking_contest = world.get_region("Cooking Contest")
+        cooking_contest.add_locations(get_location_names_with_ids(cooking_challenge_locs), CookingMama3Location)
 
 
     lets_shop_locs = []
@@ -232,7 +254,9 @@ def create_all_locations(world: CookingMama3World)-> None:
             name for name in location_name_to_id
             if  name.startswith("Shopping: ") and name.endswith(threshold)
             ]
-    hub.add_locations(get_location_names_with_ids(lets_shop_locs), CookingMama3Location)
+    if world.options.enable_shop_mode_checks > 0:
+        lets_shop = world.get_region("Let's Shop")
+        lets_shop.add_locations(get_location_names_with_ids(lets_shop_locs), CookingMama3Location)
 
     bonuses_locs = []
     for ix in range (0, world.options.number_bonus_checks):
@@ -240,7 +264,7 @@ def create_all_locations(world: CookingMama3World)-> None:
             name for name in location_name_to_id
             if  name == (f"Complete Bonus {str(ix + 1)}")
             ]
-    hub.add_locations(get_location_names_with_ids(bonuses_locs), CookingMama3Location)
+    bonuses.add_locations(get_location_names_with_ids(bonuses_locs), CookingMama3Location)
 
 
 

@@ -38,7 +38,7 @@ class CookingMama3World(World):
     def fill_slot_data(self) -> Mapping[str, Any]:
         # If you need access to the player's chosen options on the client side, there is a helper for that.
         return self.options.as_dict(
-            "goal_option", "number_recipes_for_goal", "gold_medals_sources", "number_gold_medals", "number_cook_for_friends", "excluded_medal_checks","number_special_items", "progressive_recipe_scores", "timer_buffs"
+            "goal_option", "number_recipes_for_goal", "gold_medals_sources", "number_gold_medals", "number_cook_for_friends", "excluded_medal_checks","number_special_items", "number_bonus_checks", "progressive_recipe_scores", "timer_buffs"
         )
 
 
