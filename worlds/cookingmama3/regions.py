@@ -47,7 +47,7 @@ def connect_regions(world: CookingMama3World) -> None:
         lets_shop = world.get_region("Let's Shop")
         top_menu.connect(lets_shop, "Let's Shop Mode", lambda state: state.has_group("Shopping", world.player, count=1))
 
-    if world.options.enable_shop_mode_checks > 0:
+    if world.options.enable_cooking_challenge_checks > 0:
         cooking_contest = world.get_region("Cooking Contest")
-        top_menu.connect(cooking_contest, "Let's Shop Mode", lambda state: state.has_group("Cooking Contests", world.player, count=1))
+        top_menu.connect(cooking_contest, "Cooking Contest Mode", lambda state: state.has_group("Cooking Contests", world.player, count=1))
 

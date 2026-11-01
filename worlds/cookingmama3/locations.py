@@ -242,7 +242,7 @@ def create_all_locations(world: CookingMama3World)-> None:
             name for name in location_name_to_id
             if  name.startswith("Cooking Contest: ") and name.endswith(threshold)
         ]
-    if world.options.enable_shop_mode_checks > 0:
+    if world.options.enable_cooking_challenge_checks > 0:
         cooking_contest = world.get_region("Cooking Contest")
         cooking_contest.add_locations(get_location_names_with_ids(cooking_challenge_locs), CookingMama3Location)
 

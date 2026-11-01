@@ -163,10 +163,9 @@ def set_goal(world: CookingMama3World) -> None:
     if "gold_medals" in goals:
         gold_medal_number = world.options.number_gold_medals
     if "cook_for_friend" in goals:
-            friend_number = world.options.number_cook_for_friends
+        friend_number = world.options.number_cook_for_friends
     if "special_items" in goals:
-            special_items = world.options.number_special_items 
-    
+        special_items = world.options.number_special_items 
     if len(set(goals)) == 0:
         raise OptionError(f"Cooking Mama 3: {world.player_name} has no goal conditions!")
     
@@ -175,7 +174,11 @@ def set_goal(world: CookingMama3World) -> None:
         ##this may be a bit "no fun allowed" but instant goaling seems like it should be avoided
         raise OptionError(f"Cooking Mama 3: {world.player_name} has enough starting recipes to fulfill the goal requirement. This may lead to instant goaling! Please make sure {world.player_name}'s starting recipes is less than the required recipes for goal!")
     
-
-    world.multiworld.completion_condition[world.player] = lambda state: state.has_group("Recipes", world.player, count=max(int(gold_medal_number), int(recipes_number))) and \
+    world.multiworld.completion_condition[world.player] = lambda state: state.has_group("Recipes", world.player, count=int(max(gold_medal_number, recipes_number) -
+                                                                                                                           #the secret recipes that are obtained from Ingredient combos are included in the count
+                                                                                                                           #(n * (n - 1)) / 2  <--- looks ugly as fuck but its just this
+                                                                                                                           #i remember going over this in college! maybe my degree wasnt a total waste of time after all
+                                                                                                                           sum(state.has(item, world.player) for item in INGREDIENTS_BYTE) * (sum(state.has(item, world.player) for item in INGREDIENTS_BYTE) - 1) / 2
+                                                                                                                            )) and \
                                                                         state.has_group("Friends", world.player, count=int(friend_number)) and \
                                                                         state.has_group("Special Items", world.player, count=int(special_items))
