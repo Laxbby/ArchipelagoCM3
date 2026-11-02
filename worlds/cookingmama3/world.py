@@ -19,6 +19,9 @@ class CookingMama3World(World):
 
     origin_region_name = "Top Menu"
 
+    def generate_early(self) -> None:
+        rules.validate_options(self)
+
     def create_regions(self) -> None:
         create_and_connect_regions(self)
         locations.create_all_locations(self)

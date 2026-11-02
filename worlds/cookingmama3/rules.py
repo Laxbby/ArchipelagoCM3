@@ -18,6 +18,7 @@ from .constants import (
 )
 
 from .locations import (
+ALL_MEDAL_TYPES,
 MEDAL,
 LETS_COOK_MEDAL,
 THRESHOLD
@@ -166,13 +167,6 @@ def set_goal(world: CookingMama3World) -> None:
         friend_number = world.options.number_cook_for_friends
     if "special_items" in goals:
         special_items = world.options.number_special_items 
-    if len(set(goals)) == 0:
-        raise OptionError(f"Cooking Mama 3: {world.player_name} has no goal conditions!")
-    
-    if recipes_number <= world.options.number_of_recipes and (recipes_number > 0) and (gold_medal_number + friend_number + special_items == 0):
-        #if this is the only goal condition, this can lead to literally instantly goaling
-        ##this may be a bit "no fun allowed" but instant goaling seems like it should be avoided
-        raise OptionError(f"Cooking Mama 3: {world.player_name} has enough starting recipes to fulfill the goal requirement. This may lead to instant goaling! Please make sure {world.player_name}'s starting recipes is less than the required recipes for goal!")
     
     world.multiworld.completion_condition[world.player] = lambda state: state.has_group("Recipes", world.player, count=int(max(gold_medal_number, recipes_number) -
                                                                                                                            #the secret recipes that are obtained from Ingredient combos are included in the count
@@ -182,3 +176,37 @@ def set_goal(world: CookingMama3World) -> None:
                                                                                                                             )) and \
                                                                         state.has_group("Friends", world.player, count=int(friend_number)) and \
                                                                         state.has_group("Special Items", world.player, count=int(special_items))
+
+##this was originally spread throughout the generation code, but i have been told that its best to put OptionErrors in generate_early. so here it is
+def validate_options(world: CookingMama3World) -> None:
+    #first, make sure that at least 1 set of medals is enabled for checks
+    excluded_medals = world.options.excluded_medal_checks
+    chosen_medals = ALL_MEDAL_TYPES.difference(excluded_medals)
+    if len(chosen_medals) == 0:
+        #this technically *does* generate, but i do not wanna deal with testing this, man. 
+        ##hey fred! gimme a cooking mama ap. hold the cooking minigames!
+        ##hold the cooking minigames??? hey jimmy! gimme a cooking mama with nothin!
+        ##*nothin*????????
+        raise OptionError(f"Cooking Mama 3: {world.player_name} excluded all recipe medals! Please make sure to include at least one category of medals as checks!")
+
+    goals = world.options.goal_option
+    recipes_number = 0
+    gold_medal_number = 0
+    friend_number = 0
+    special_items = 0
+    if "unlocked_recipes" in goals:
+        recipes_number = world.options.number_recipes_for_goal
+    if "gold_medals" in goals:
+        gold_medal_number = world.options.number_gold_medals
+    if "cook_for_friend" in goals:
+        friend_number = world.options.number_cook_for_friends
+    if "special_items" in goals:
+        special_items = world.options.number_special_items 
+    #then, make sure that theres at least one goal enabled
+    if len(set(goals)) == 0:
+        raise OptionError(f"Cooking Mama 3: {world.player_name} has no goal conditions!")
+    #then, check and see if the number of unlocked default recipes is greater than the goal cond. and there are no other conditions
+    if recipes_number <= world.options.number_of_recipes and (recipes_number > 0) and (gold_medal_number + friend_number + special_items == 0):
+        #if this is the only goal condition, this can lead to literally instantly goaling
+        ##this may be a bit "no fun allowed" but instant goaling seems like it should be avoided
+        raise OptionError(f"Cooking Mama 3: {world.player_name} has enough starting recipes to fulfill the goal requirement. This may lead to instant goaling! Please make sure {world.player_name}'s starting recipes is less than the required recipes for goal!")
