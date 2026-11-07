@@ -80,6 +80,8 @@ class CookingMama3Client(BizHawkClient):
                 return False
         except bizhawk.RequestFailedError:
             return False
+        except UnicodeDecodeError:
+            return False
         ctx.game = self.game
         ctx.items_handling = 0b111
         ctx.want_slot_data = True
